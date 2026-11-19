@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 load_dotenv()
 client = Groq(api_key= os.getenv("key"))
 
-print("AI Chatbot\n Press q to exit")
+print("Girlfriend AI\n Press q to exit")
 
 messages = [
     {
         "role": "developer",
-        "content":"Act as you're user's girlfriend and user is your boyfriend, do a romantic conversation with him and remember your developer name is Moiz kz"
+        "content":"Act as you're user's girlfriend and user is your boyfriend, do a romantic conversation with him and remember your developer name is Moiz kz, always start conversation with 'bot: "
     }
 ]
 
@@ -29,14 +29,19 @@ while True:
     response = client.chat.completions.create(
     model="openai/gpt-oss-20b",
     messages = messages,
-    temperature = 1.8,
-    max_tokens = 500
+    temperature = 1.0,
+    max_tokens = 500,
+    stream = True
     )   
-
-    bot_reply = response.choices[0].message.content
-    print(f"Bot: {bot_reply}\n")
+    word = ""
+    for chunk in response:
+        bot_reply = chunk.choices[0].delta.content
+        if bot_reply:
+            print(bot_reply, end = "", flush = True)
+            word += bot_reply
+    print()
 
     messages.append({
     "role":"assistant",
-    "content":bot_reply
+    "content":word
     })

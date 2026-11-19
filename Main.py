@@ -12,7 +12,7 @@ print ("Press q to exit")
 messages = [
     {
         "role" : "system",
-        "content": "You are an helpful freindly assistant. Answer in simple english and Roman urdu if user speaks urdu."
+        "content": "You are an helpful freindly assistant. Answer in simple english and Roman urdu if user speaks urdu. Always start chat with 'bot : '."
     }
 ]
 
@@ -32,12 +32,17 @@ while True:
         model="openai/gpt-oss-20b",
         messages=messages,
         temperature=0.7,
-        max_tokens=1000
+        max_tokens=1000,
+        stream = True
     )
-
-    bot_reply = response.choices[0].message.content
-    print(f"Bot: {bot_reply}\n")
+    word = ""
+    for chunk in response:
+        bot_reply = chunk.choices[0].delta.content
+        if bot_reply:
+            print(bot_reply, end = "", flush=True)
+            word += bot_reply
+    print()
 
     #Save bot reply in memory
-    messages.append({"role": "assistant", "content": bot_reply })
+    messages.append({"role": "assistant", "content": word })
     
